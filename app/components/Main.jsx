@@ -18,7 +18,7 @@ const Main = () => {
   const fetchOwnerBalance = async () => {
     try {
       const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
-      const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account }); 
+       const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account }); 
       setownerBalace({
          eggs: myEggs,
         minners: myMiners

@@ -15,7 +15,7 @@ export default function Header() {
 
   return (
     <section className="fixed bg-gradient-to-r from-gray-800 to-black p-4 text-white z-30">
-      <div className="flex justify-between items-center w-[75%] m-auto">
+      <div className="flex justify-between items-center w-full sm:w-[75%] m-auto">
          <div className="flex items-center space-x-2 w-[30%]">
           <img
             src="/logo.png"
@@ -24,7 +24,7 @@ export default function Header() {
           />
         </div>
 
-         <div className="text-lg w-[40%] font-semibold">THE LONGEST RUNNING MINER</div>
+         <div className="hidden sm:inline text-lg w-[40%] font-semibold">THE LONGEST RUNNING MINER</div>
 
          <div className="flex items-center space-x-4 w-[50%]">
           <button
@@ -33,7 +33,7 @@ export default function Header() {
           >
             {state.account ? "Connected" : "CONNECT WALLET"}
           </button>
-          <span className="text-sm text-gray-400">Having Connection Issues?</span>
+          <span className="hidden sm:inline text-sm text-gray-400">Having Connection Issues?</span>
         </div>
       </div>
 

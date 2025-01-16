@@ -20,10 +20,8 @@ const CompoundUI = ({ setownerBalace }) => {
 if((state.account).toLowerCase()===ceoAddress.toLowerCase()){
   setStartGame(true);
 }
-console.log(state.account)
-console.log(ceoAddress)
-console.log()
-        const bnbValue = Web3.utils.toWei(eggs.toString(), 'ether');
+ 
+         const bnbValue = Web3.utils.toWei(eggs.toString(), 'ether');
         setBnbInBarrel(bnbValue);
         setRefAddress(referrals)
       } catch (error) {
@@ -47,11 +45,12 @@ console.log()
       if (!state.contract || !state.contract.methods) {
         throw new Error('Contract not initialized correctly');
       }
+console.log('contract ',await state.contract.methods)
+const gasEstimate = await state.contract.methods.bakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account, value: weiValue });
+await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000000000000000000').send({ from: state.account, value: weiValue, gas: gasEstimate });
+       const balance = await web3.eth.getBalance(state.account);
+        dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
 
-      await state.contract.methods.bakePizza(refAddress || '0x0000000000000000000000000000000000000000')
-        .send({ from: state.account, value: weiValue , gas: 300000 });
-      const balance = await web3.eth.getBalance(state.account);
-      dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
       const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
       const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account });
       setEthAmount(0);
@@ -60,8 +59,7 @@ console.log()
         eggs: myEggs,
         minners: myMiners,
       });
-      console.log('myminners', myMiners, myEggs);
-      alert('Eggs purchased successfully!');
+       alert('Eggs purchased successfully!');
     } catch (error) {
       console.error('Error buying eggs:', error);
       alert('An error occurred: ' + error.message);
@@ -70,8 +68,10 @@ console.log()
 
   const rebake = async () => {
     try {
-      await state.contract.methods.rebakePizza(refAddress || '0x0000000000000000000000000000000000000000').send({ from: state.account });
-      const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
+       const gasEstimate = await state.contract.methods.rebakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account });
+ await state.contract.methods.rebakePizza(refAddress|| '0x0000000000000000000000000000000000000000').send({ from: state.account, gas: gasEstimate });
+
+       const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
       const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account });
       setownerBalace({
         eggs: myEggs,
@@ -87,8 +87,10 @@ console.log()
 
   const withdrawRewards = async () => {
     try {
-      await state.contract.methods.eatPizza().send({ from: state.account });
-      const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
+      const gasEstimate = await state.contract.methods.eatPizza().estimateGas({ from: state.account });
+      await state.contract.methods.eatPizza( ).send({ from: state.account, gas: gasEstimate });
+     
+       const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
       const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account });
       setownerBalace({
         eggs: myEggs,

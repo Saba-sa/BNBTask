@@ -12,7 +12,7 @@ const Main = () => {
           <img src="/cartwhite.png" alt="cart" />
         </div>
         <div
-          className="grid grid-cols-1 sm:grid-cols-2  mb-12 gap-2"
+          className="flex flex-col sm:grid grid-cols-1 sm:grid-cols-2  mb-12 gap-2"
           style={{ gridTemplateRows: "auto" }}
         >
           <div className="bg-black bg-opacity-90 text-gray-300 p-4 flex gap-4 flex-col">

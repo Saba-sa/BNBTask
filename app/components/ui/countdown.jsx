@@ -5,8 +5,8 @@ import Web3 from "web3";
  const Countdown = () => {
   const { state ,dispatch} = useAppContext();
   const contractDeploymentTimestamp = state?.deploymentTimestamp || 0;
-    const contractAddress = '0x62713745816a21a117796eA86B4182328f729e0e';
-    const transactionHash = "0x9eaaaa6f476d23111c06550de4ba20590b06649a9cbf8cdab1ede394ad14d5fc"; // Correct Transaction Hash
+    const contractAddress = '0x54594b92dD6497e602e2fd0977F9Af1d78806e7a';
+    const transactionHash = "0x910d21a4427af36b3fc5031228cb21b2e0e174c192d3f3822ec8185d557b8ba2"; // Correct Transaction Hash
 
 const [balance, setBalance] = useState('0');
   const [elapsedTime, setElapsedTime] = useState({
@@ -17,8 +17,8 @@ const [balance, setBalance] = useState('0');
   });
    const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (!contractDeploymentTimestamp) {
+   useEffect(() => {
+     if (!contractDeploymentTimestamp) {
       setMessage("No deployment timestamp found.");
       return;
     }
@@ -48,24 +48,23 @@ const [balance, setBalance] = useState('0');
 
       setElapsedTime({ years, months, days, hours });
     };
-
     calculateElapsedTime();
 
     const interval = setInterval(calculateElapsedTime, 60 * 60 * 1000);
 
     return () => clearInterval(interval);
-  }, [contractDeploymentTimestamp]);
+  }, [state.contract,contractDeploymentTimestamp]);
    
   const getBalance = async () => {
-    const web3 = new Web3(window.ethereum);
+     const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
+       const  web3 = new Web3(BSC_RPC_URL);
     if (typeof web3 !== 'undefined') {  
       try {
-        const balanceWei = await web3.eth.getBalance(contractAddress);  
-        const balanceEther = Web3.utils.fromWei(balanceWei, 'ether');  
+         const balanceWei = await web3.eth.getBalance(contractAddress);  
+         const balanceEther = Web3.utils.fromWei(balanceWei, 'ether');  
          setBalance(balanceEther);  
          const transactionReceipt = await web3.eth.getTransactionReceipt(transactionHash);
-           
-         if (!transactionReceipt) {
+          if (!transactionReceipt) {
            console.error('Transaction receipt not found for the hash:', transactionHash);
            return;
          }
@@ -84,9 +83,10 @@ const [balance, setBalance] = useState('0');
 
   
   useEffect(() => {
+ 
        getBalance(); 
  
-  }, [state.contract]);  
+  }, []);  
   
   return (
     <div className="container mx-auto max-w-md shadow-md">
