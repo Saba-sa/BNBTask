@@ -8,10 +8,10 @@ const Sidebaropen=()=>{
 
     const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
     const closeSidebar = () => setSidebarOpen(false);
-return (<> {/* Explore Button */}
+return (<> 
     <button
       onClick={toggleSidebar}
-      className="fixed top-20 left-8 w-28 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center gap-2"
+      className="fixed top-[100px] sm:top-[120px] md:top-[130px]   lg:top-24 xl:top-20 left-8 w-28 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center justify-center gap-2"
     >
       <FaLink />
       Explore

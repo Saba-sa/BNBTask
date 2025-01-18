@@ -20,8 +20,8 @@ const Main = () => {
               Sustainability
             </h2>
             <p>
-              BNB Miner X (BNBMinerX.com), also known as "The Original BNB Miner"
-              and formerly known as BNBMiner.finance, is a community-driven,
+              BNB Miner X (TokenovenX.com), also known as "The Original BNB Miner"
+              and formerly known as Tokenoven.finance, is a community-driven,
               immutable contract with over three years of flawless operation.
             </p>
             <p>
@@ -149,8 +149,8 @@ const Main = () => {
               links, websites and contracts, as they may pose security threats or
               fraudulent activities. If you're ever unsure, feel free to consult the
               official Telegram chat before interacting:{" "}
-              <a href="https://t.me/bnbminer" className="text-teal-600">
-                https://t.me/bnbminer
+              <a href="https://t.me/Tokenoven" className="text-teal-600">
+                https://t.me/Tokenoven
               </a>
             </p>
           </div>

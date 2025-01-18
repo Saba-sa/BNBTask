@@ -14,17 +14,17 @@ export default function Header() {
     };
 
   return (
-    <section className="fixed bg-gradient-to-r from-gray-800 to-black p-4 text-white z-30">
+    <section className="fixed bg-gradient-to-r from-gray-800 to-black p-4 text-white z-30 w-full   ">
       <div className="flex justify-between items-center w-full sm:w-[75%] m-auto">
-         <div className="flex items-center space-x-2 w-[30%]">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="w-full"
-          />
+         <div className="flex items-center space-x-2 w-full sm:w-[30%]">
+         <p
+  className="w-full text-3xl font-extrabold text-gradient bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-white"
+>
+  Tokenoven
+</p>
         </div>
 
-         <div className="hidden sm:inline text-lg w-[40%] font-semibold">THE LONGEST RUNNING MINER</div>
+         <div className="hidden lg:inline text-lg w-[40%] font-semibold">THE LONGEST RUNNING MINER</div>
 
          <div className="flex items-center space-x-4 w-[50%]">
           <button

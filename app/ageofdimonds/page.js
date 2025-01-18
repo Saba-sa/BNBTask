@@ -134,8 +134,8 @@ Draw One Card (0.01 BNB)      </button>
                   and contracts, as they may pose security threats or fraudulent
                   activities. If you're ever unsure, feel free to consult the
                   official Telegram chat before interacting:{" "}
-                  <a href="https://t.me/bnbminer" className="text-teal-600">
-                    https://t.me/bnbminer
+                  <a href="https://t.me/Tokenoven" className="text-teal-600">
+                    https://t.me/Tokenoven
                   </a>
                 </p>
               </div>

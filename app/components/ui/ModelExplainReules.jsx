@@ -19,7 +19,7 @@ const ModelTemplate = ({ isOpen, closeModal }) => {
       id: 2,
       title: "To Start Your BNB-Miner Journey",
       description: [
-        "Connect your BSC wallet to the BNBMiner platform.",
+        "Connect your BSC wallet to the Tokenoven platform.",
         "Enter the amount of BNB you want to spend on Miners.",
         "Click the 'Hire Miners' button and approve the transaction.",
         "The contract will convert your BNB into Miners and add them to your account."

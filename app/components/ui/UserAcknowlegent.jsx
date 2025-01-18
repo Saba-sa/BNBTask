@@ -77,7 +77,7 @@ const UserAcknowlegent = ({ isOpen, closeModal }) => {
                 </p>
                 <p className="text-red-500">IMPORTANT SAFETY NOTICE
                 </p>
-                <p className="text-xl text-left my-2 text-teal-600">Legitimate community members, admins, creators, and/or builders of any project will never cold call or contact you personally. Beware of impersonators. Always remember: never share your seed phrases and private keys with anyone. Additionally, avoid interacting with random links, websites and contracts, as they may pose security threats or fraudulent activities. If you're ever unsure, feel free to consult the official Telegram chat before interacting: https://t.me/bnbminer
+                <p className="text-xl text-left my-2 text-teal-600">Legitimate community members, admins, creators, and/or builders of any project will never cold call or contact you personally. Beware of impersonators. Always remember: never share your seed phrases and private keys with anyone. Additionally, avoid interacting with random links, websites and contracts, as they may pose security threats or fraudulent activities. If you're ever unsure, feel free to consult the official Telegram chat before interacting: https://t.me/Tokenoven
                 </p>
               </div>
               <div className="flex justify-between items-center flex-col pb-3 p-4">
