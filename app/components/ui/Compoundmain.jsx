@@ -1,3 +1,4 @@
+'use client'
 import { useAppContext } from '@/app/context/AppContext';
 import React, { useState, useEffect } from 'react';
 import { FaTwitter, FaFacebook } from 'react-icons/fa';
@@ -7,12 +8,20 @@ const CompoundUI = ({ setownerBalace }) => {
   const { state, dispatch } = useAppContext();
   const [refAddress, setRefAddress] = useState('0x0000000000000000000000000000000000000000');
   const [ethAmount, setEthAmount] = useState(0);
+  const [err, setErr] = useState(' ');
   const [startGame, setStartGame] = useState(false);
   const [bnbInBarrel, setBnbInBarrel] = useState(0);
-  const web3 = new Web3(window.ethereum);
+  const [web3, setWeb3] = useState(null)
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.ethereum) {
+      setWeb3(new Web3(window.ethereum))
+    }
+  }, [])
+  useEffect(() => {
     const fetchBarrelBalance = async () => {
+      if (!web3 || !state.contract) return
+
       try {
         const eggs = await state?.contract?.methods.getMyEggs(state.account).call();
         const referrals = await state?.contract?.methods.referrals(state.account).call();
@@ -25,15 +34,19 @@ if((state.account).toLowerCase()===ceoAddress.toLowerCase()){
         setBnbInBarrel(bnbValue);
         setRefAddress(referrals)
       } catch (error) {
-        console.error('Error fetching barrel balance:', error);
+        // console.error('Error fetching barrel balance:', error);
+        setErr('Error fetching barrel balance')
       }
     };
     if (state.contract) {
+      setErr('')
       fetchBarrelBalance();
     }
   }, [state.contract, state.account]);
 
   const buyEggs = async () => {
+    setErr('')
+
     const parsedEthAmount = parseFloat(ethAmount);
     if (!parsedEthAmount || isNaN(parsedEthAmount) || parsedEthAmount <= 0) {
       alert('Please enter a valid amount.');
@@ -45,8 +58,7 @@ if((state.account).toLowerCase()===ceoAddress.toLowerCase()){
       if (!state.contract || !state.contract.methods) {
         throw new Error('Contract not initialized correctly');
       }
-console.log('contract ',await state.contract.methods)
-const gasEstimate = await state.contract.methods.bakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account, value: weiValue });
+ const gasEstimate = await state.contract.methods.bakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account, value: weiValue });
 await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000000000000000000').send({ from: state.account, value: weiValue, gas: gasEstimate });
        const balance = await web3.eth.getBalance(state.account);
         dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
@@ -61,12 +73,14 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
       });
        alert('Eggs purchased successfully!');
     } catch (error) {
-      console.error('Error buying eggs:', error);
+      // console.error('Error buying eggs:', error);
+      setErr('Error buying eggs');
       alert('An error occurred: ' + error.message);
     }
   };
 
   const rebake = async () => {
+    setErr('')
     try {
        const gasEstimate = await state.contract.methods.rebakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account });
  await state.contract.methods.rebakePizza(refAddress|| '0x0000000000000000000000000000000000000000').send({ from: state.account, gas: gasEstimate });
@@ -81,12 +95,17 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
       dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
       alert('Eggs rebaked successfully!');
     } catch (error) {
-      console.error('Error rebaking eggs:', error);
+      setErr('Error rebaking eggs');
+      alert('An error occurred: ' + error.message);
+
+      // console.error('Error rebaking eggs:', error);
     }
   };
 
   const withdrawRewards = async () => {
     try {
+    setErr('')
+
       const gasEstimate = await state.contract.methods.eatPizza().estimateGas({ from: state.account });
       await state.contract.methods.eatPizza( ).send({ from: state.account, gas: gasEstimate });
      
@@ -100,7 +119,10 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
       dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
       alert('Rewards withdrawn successfully!');
     } catch (error) {
-      console.error('Error withdrawing rewards:', error);
+    setErr('Error withdrawing rewards')
+    alert('An error occurred: ' + error.message);
+
+      // console.error('Error withdrawing rewards:', error);
     }
   };
 
@@ -110,7 +132,9 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
       alert('Game started successfully!');
       dispatch({ type: 'START_GAME', gameIsStarted: true });
     } catch (error) {
-      console.error('Error starting game:', error);
+      alert('Error starting game: ' + error.message);
+
+      // console.error('Error starting game:', error);
     }
   };
 
@@ -152,8 +176,8 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
             className="w-full text-white bg-black bg-opacity-80 p-2 rounded-md outline-none"
           />
         </div>
-
-        {/* Buttons */}
+{err.length>1 && <p className='text-red-600'> {err}</p>}
+         {/* Buttons */}
         <button className="w-full bg-teal-500 text-white py-2 rounded-md mb-3 uppercase" onClick={buyEggs}>
           Bake Pizza
         </button>

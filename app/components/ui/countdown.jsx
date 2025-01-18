@@ -1,6 +1,7 @@
 "use client";
 import { useAppContext } from "@/app/context/AppContext";
 import { useEffect, useState } from "react";
+import Loader from "./Loader"
 import Web3 from "web3";
  const Countdown = () => {
   const { state ,dispatch} = useAppContext();
@@ -16,11 +17,12 @@ const [balance, setBalance] = useState('0');
     hours: 0,
   });
    const [message, setMessage] = useState("");
+   const [showLoader, setshowLoader] = useState(true);
 
    useEffect(() => {
      if (!contractDeploymentTimestamp) {
       setMessage("No deployment timestamp found.");
-      return;
+       return;
     }
 
     const calculateElapsedTime = () => {
@@ -29,6 +31,7 @@ const [balance, setBalance] = useState('0');
 
       if (differenceInSeconds < 0) {
         setMessage("Contract deployment is in the future.");
+      setshowLoader(false);
         setElapsedTime({ years: 0, months: 0, days: 0, hours: 0 });
         return;
       }
@@ -56,28 +59,38 @@ const [balance, setBalance] = useState('0');
   }, [state.contract,contractDeploymentTimestamp]);
    
   const getBalance = async () => {
+ 
      const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
        const  web3 = new Web3(BSC_RPC_URL);
     if (typeof web3 !== 'undefined') {  
       try {
          const balanceWei = await web3.eth.getBalance(contractAddress);  
+ 
          const balanceEther = Web3.utils.fromWei(balanceWei, 'ether');  
          setBalance(balanceEther);  
          const transactionReceipt = await web3.eth.getTransactionReceipt(transactionHash);
+
           if (!transactionReceipt) {
            console.error('Transaction receipt not found for the hash:', transactionHash);
+      setshowLoader(false);
+
            return;
          }
          
          const block = await web3.eth.getBlock(transactionReceipt.blockNumber);
          const deploymentTimestamp = block.timestamp;
          dispatch({ type: 'SET_DEPLOYMENTTIMESTAMP', payload: Number(deploymentTimestamp) });
+      setshowLoader(false);
 
       } catch (error) {
         console.error('Error fetching contract balance:', error);
+      setshowLoader(false);
+
       }
     } else {
       console.error('Web3 is not initialized correctly');
+      setshowLoader(false);
+
     }
   };
 
@@ -90,8 +103,9 @@ const [balance, setBalance] = useState('0');
   
   return (
     <div className="container mx-auto max-w-md shadow-md">
-      <div className="p-8 text-center sm:p-10 bg-black opacity-90 sm:rounded-xl">
-        <h1 className="text-teal-500 text-2xl font-bold underline">Flawlessly Operating:</h1>
+        <div className="p-8 text-center sm:p-10 bg-black opacity-90 sm:rounded-xl">
+    {  showLoader   ?  <Loader className="text-gray-400 w-full h-[80]" />
+:       <> <h1 className="text-teal-500 text-2xl font-bold underline">Flawlessly Operating:</h1>
         {message ? (
           <p className="text-red-500">{message}</p>
         ) : (
@@ -119,6 +133,7 @@ const [balance, setBalance] = useState('0');
         <button className="w-full mt-6 text-indigo-50 font-bold bg-indigo-600 py-3 rounded-md hover:bg-indigo-500 transition duration-300">
         Contract Balance: {balance.slice(0, 5)}  BNB
         </button>
+        </>}
       </div>
     </div>
   );
