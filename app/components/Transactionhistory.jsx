@@ -26,7 +26,7 @@ const TransactionHistory = () => {
 
         setTransactions(parsedTransactions);
       } catch (error) {
-        console.error("Error fetching transactions:", error);
+        alert ("Error fetching transactions:", error);
       }
     };
 
@@ -35,7 +35,7 @@ const TransactionHistory = () => {
     // Optional: Real-time listener for new events
     const eventListener = contract.events.TransactionEvent({}, (error, event) => {
       if (error) {
-        console.error("Error listening to events:", error);
+        alert("Error listening to events:", error);
       } else {
         setTransactions((prev) => [
           ...prev,

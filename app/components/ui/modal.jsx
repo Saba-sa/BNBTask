@@ -17,6 +17,7 @@ useEffect(() => {
 }, [isOpen]);
 
 const connectMetaMask = async () => {
+  console.log('metamask')
   setLoader(true);
   setErrMsg('');
   try {
@@ -32,13 +33,16 @@ const connectMetaMask = async () => {
   } catch (error) {
     setLoader(false);
     setErrMsg("MetaMask connection error. Please try again.");
-    console.log("MetaMask connection error:", error.message);
+    // console.log("MetaMask connection error:", error.message);
   }
 };
 
 const connectBinanceWallet = async () => {
+  console.log('binace')
+
   setLoader(true);
   setErrMsg('');
+  console.log('binace wallet',window.BinanceChain)
   try {
     if (!window.BinanceChain) throw new Error("Binance Wallet is not installed");
     const accounts = await window.BinanceChain.request({ method: "eth_requestAccounts" });
@@ -50,7 +54,7 @@ const connectBinanceWallet = async () => {
   } catch (error) {
     setLoader(false);
     setErrMsg("Binance Wallet connection error. Please try again.");
-    console.log("Binance Wallet connection error:", error.message);
+    // console.log("Binance Wallet connection error:", error.message);
   }
 };
 

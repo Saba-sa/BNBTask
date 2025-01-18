@@ -71,7 +71,7 @@ const [balance, setBalance] = useState('0');
          const transactionReceipt = await web3.eth.getTransactionReceipt(transactionHash);
 
           if (!transactionReceipt) {
-           console.error('Transaction receipt not found for the hash:', transactionHash);
+           alert('Transaction receipt not found for the hash:', transactionHash);
       setshowLoader(false);
 
            return;
@@ -83,12 +83,12 @@ const [balance, setBalance] = useState('0');
       setshowLoader(false);
 
       } catch (error) {
-        console.error('Error fetching contract balance:', error);
+        alert('Error fetching contract balance:', error);
       setshowLoader(false);
 
       }
     } else {
-      console.error('Web3 is not initialized correctly');
+      alert('Web3 is not initialized correctly');
       setshowLoader(false);
 
     }

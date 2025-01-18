@@ -24,7 +24,7 @@ const Main = () => {
         minners: myMiners
       });
     } catch (error) {
-      console.error("Error fetching owner balance:", error);
+      alert("Error fetching owner balance:", error);
     }
   };
   useEffect(() => {

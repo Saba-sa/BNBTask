@@ -26,11 +26,11 @@ export const AppProvider = ({ children }) => {
      const initializeBlockchain = async () => {
       try {
         if (window.ethereum) {
-           web3 = new Web3(window.ethereum);
-          await window.ethereum.request({ method: "eth_requestAccounts" });
-          const accounts = await web3.eth.getAccounts();
-          dispatch({ type: "SET_PROVIDER", payload: window.ethereum });
-          dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
+          //  web3 = new Web3(window.ethereum);
+          // await window.ethereum.request({ method: "eth_requestAccounts" });
+          // const accounts = await web3.eth.getAccounts();
+          // dispatch({ type: "SET_PROVIDER", payload: window.ethereum });
+          // dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
          } else {
            web3 = new Web3(BSC_RPC_URL);
           
@@ -52,7 +52,7 @@ export const AppProvider = ({ children }) => {
           });
         }
       } catch (error) {
-        console.error("Error initializing blockchain:", error);
+        alert("Error initializing blockchain:", error);
       }
     };
 
