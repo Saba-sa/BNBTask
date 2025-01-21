@@ -24,7 +24,7 @@ export default function Header() {
 </p>
         </div>
 
-         <div className="hidden lg:inline text-lg w-[40%] font-semibold">THE LONGEST RUNNING MINER</div>
+         <div className="hidden lg:inline text-lg w-[40%] font-semibold">THE NEWEST RUNNING MINER</div>
 
          <div className="flex items-center space-x-4 w-[50%]">
           <button
