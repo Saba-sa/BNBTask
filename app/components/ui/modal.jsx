@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
 import Web3 from "web3";
-import Image from "next/image";
-import Loader from "./Loader";
+ import Loader from "./Loader";
 
 const ModalComponent = ({ isOpen, closeModal }) => {
   const { dispatch } = useAppContext();
@@ -84,7 +83,7 @@ const connectBinanceWallet = async () => {
                   className="w-full flex flex-col items-center justify-center gap-2 cursor-pointer py-3 rounded-lg mb-3 text-black"
                   onClick={connectMetaMask}
                 >
-                <Image src={'/metamask.png'} width={50} height={50} alt="metamask icon"/>
+                <img src={'/metamask.png'} width={50} height={50} alt="metamask icon"/>
                 <h1 className="font-bold text-2xl">INJECTED</h1>
                   <p className="text-md text-gray-400">Rabby.io, Metamask, Web3 Browsers, etc.</p>
                 </div>
@@ -92,7 +91,7 @@ const connectBinanceWallet = async () => {
                   className="w-full flex flex-col items-center justify-center gap-2 cursor-pointer py-3 rounded-lg mb-3 text-black"
                   onClick={connectBinanceWallet}
                 >
-                <Image src={'/bnblogo.png'} width={50} height={50} alt="bnb icon"/>
+                <img src={'/bnblogo.png'} width={50} height={50} alt="bnb icon"/>
                 <h1 className="font-bold text-2xl">Binance Chain Wallet</h1>
                   <p className="text-md text-gray-400">
                   Connect to your Binance Chain Wallet</p>

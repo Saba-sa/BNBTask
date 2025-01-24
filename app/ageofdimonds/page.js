@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import Fomodominance from "../components/Fomodominance";
+ import Fomodominance from "../components/Fomodominance";
 import Rounddetails from "../components/Rounddetails";
 import Fomometrics from "../components/Fomometrics";
 import Fomobid from "../components/Fomobid";
@@ -24,7 +23,7 @@ export default function Fomo() {
          flex flex-col  items-center justify-center pt-28"
         >
           <div className="w-[15%]">
-            <Image
+            <img
               src="/girl.png"
               alt="fomo image"
               width={100}
@@ -36,7 +35,7 @@ export default function Fomo() {
           <div className="bg-black bg-opacity-70 p-8 pt-5 rounded-lg text-center text-gray-400 mx-auto">
           <div className=" w-[80%]  mx-auto flex  flex-col items-center border-2 border-b-0">
           <div className="w-[80%]">
-          <Image
+          <img
               src="/carts.png"
               alt="fomo image"
               width={100}
