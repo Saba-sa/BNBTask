@@ -5,69 +5,115 @@ import ImagesMain from "./ui/mainimages";
 import CompoundUI from "./ui/Compoundmain";
 import ModelExplainReules from "./ui/ModelExplainReules";
 import Socialmedialinks from "./ui/Socialmedialinks";
- import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import EggProgressBar from "./ui/EggProgressBar";
+import Notifications from "./ui/Notifications";
 
 const Main = () => {
-  const { state } = useAppContext();  
+  const { state } = useAppContext();
   const [modalShow, setModalShow] = useState(false);
-
-  const [ownerBalace, setownerBalace] = useState({
-     eggs:0,
-    minners:0,
+  const [ownerBalance, setOwnerBalance] = useState({
+    eggs: 0,
+    miners: 0,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const fetchOwnerBalance = async () => {
+    setLoading(true);
+    setError(null); // Reset error state
+
     try {
-      const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
-       const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account }); 
-      setownerBalace({
-         eggs: myEggs,
-        minners: myMiners
+      // Ensure contract and account are available
+      if (!state.readOnlyContract || !state.account) {
+        throw new Error("Contract or account not initialized.");
+      }
+
+      // Fetch miners and eggs
+      const myMiners = await state.readOnlyContract.methods
+        .getMyMiners()
+        .call({ from: state.account });
+
+      const myEggs = await state.readOnlyContract.methods
+        .getMyEggs()
+        .call({ from: state.account });
+
+      // Update owner balance
+      setOwnerBalance({
+        eggs: myEggs,
+        miners: myMiners,
       });
+
+      toast.success("Miners and eggs values fetched successfully");
     } catch (error) {
-      alert("Error fetching owner balance:", error);
+      console.error("Error fetching balance:", error);
+
+      // Handle specific error cases
+      if (error.message.includes("revert")) {
+        setError("Transaction failed: " + error.message.split("revert ")[1]);
+      } else if (error.code === 4001) {
+        setError("Transaction rejected by user.");
+      } else {
+        setError("Failed to fetch balance. Please try again.");
+      }
+
+      toast.error(error.message || "An error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
+
   useEffect(() => {
-    if (!state.contract || !state.account) {
-      console.log("Contract, account, or web3 not initialized.");
-      return;
+    if (state.readOnlyContract && state.account) {
+      fetchOwnerBalance();
     }
-  
-   
-    fetchOwnerBalance();
-  }, [state]);
-  
+  }, [state.readOnlyContract, state.account]);
+
   const showDetails = () => {
     setModalShow(true);
   };
+
   return (
     <div className="flex items-center">
       <div className="container mx-auto max-w-md shadow-md hover:shadow-lg transition duration-300">
-         <ImagesMain />
+        <ImagesMain />
         <Countdown />
-        <div className="p-2 sm:p-4 flex flex-col  bg-teal-500 text-white my-2 sm:rounded-lg">
+        <div className="p-2 sm:p-4 flex flex-col bg-teal-500 text-white my-2 sm:rounded-lg">
           <p>
             Address: {state?.account?.slice(0, 3)}....{state?.account?.slice(-3)} (
-            {state?.balance || "0"} BNB) 
+            {state?.balance || "0"} BNB)
           </p>
-            <p><span>{ownerBalace.minners}</span> Miners</p> 
-            <p><span>{ownerBalace.eggs}</span> eggs</p> 
-          <button className="mt-2 m-auto px-2 py-2 bg-orange-400 text-gray-500 text-xl rounded-md hover:bg-orange-500">
-            My miners' performance
-          </button>
+          {loading ? (
+            <p>Loading balance...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : (
+            <>
+              <p>
+                <span>{ownerBalance.miners}</span> Miners
+              </p>
+              <p>
+                <span>{ownerBalance.eggs}</span> Eggs
+              </p>
+            </>
+          )}
+          <EggProgressBar />
         </div>
-         <CompoundUI setownerBalace={setownerBalace}  />
-         <ModelExplainReules
+
+        <CompoundUI setOwnerBalance={setOwnerBalance} />
+        <ModelExplainReules
           isOpen={modalShow}
           closeModal={() => setModalShow(false)}
         />
-          <button
+        <button
           className="w-full my-2 bg-teal-500 text-white py-4 rounded-md mb-3 uppercase"
           onClick={showDetails}
         >
           Get Started
         </button>
-        <Socialmedialinks/>
+        <Socialmedialinks />
+        <Notifications />
       </div>
     </div>
   );

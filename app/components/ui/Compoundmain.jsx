@@ -1,145 +1,69 @@
-'use client'
+"use client";
 import { useAppContext } from '@/app/context/AppContext';
 import React, { useState, useEffect } from 'react';
 import { FaTwitter, FaFacebook } from 'react-icons/fa';
+import OpenKitchen from './Openkitchen';
+import Buyeggs from './Buyeggs';
+import Rebake from './Rebake';
+import Withdraw from './Withdraw';
 import Web3 from 'web3';
+import { contractABI, contractAddress } from '@/app/utils/contractConfig';
+import { toast } from 'react-toastify';
 
-const CompoundUI = ({ setownerBalace }) => {
+const CompoundUI = ({ setOwnerBalance }) => {
   const { state, dispatch } = useAppContext();
   const [refAddress, setRefAddress] = useState('0x0000000000000000000000000000000000000000');
   const [ethAmount, setEthAmount] = useState(0);
-  const [err, setErr] = useState(' ');
+  const [err, setErr] = useState('');
   const [startGame, setStartGame] = useState(false);
   const [bnbInBarrel, setBnbInBarrel] = useState(0);
-  const [web3, setWeb3] = useState(null)
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.ethereum) {
-      setWeb3(new Web3(window.ethereum))
-    }
-  }, [])
   useEffect(() => {
     const fetchBarrelBalance = async () => {
-      if (!web3 || !state.contract) return
-
+      console.log('fetching barrel balance');
       try {
-        const eggs = await state?.contract?.methods.getMyEggs(state.account).call();
-        const referrals = await state?.contract?.methods.referrals(state.account).call();
-        const ceoAddress = await state?.contract?.methods.ceoAddress().call();
-if((state.account).toLowerCase()===ceoAddress.toLowerCase()){
-  setStartGame(true);
-}
- 
-         const bnbValue = Web3.utils.toWei(eggs.toString(), 'ether');
-        setBnbInBarrel(bnbValue);
-        setRefAddress(referrals)
+        // Check if state.contract and state.contract.readOnlyContract are defined
+        if (!state.readOnlyContract || !state.account) {
+          console.warn('Contract or account not initialized');
+          toast.warn('Contract or account not initialized.');
+          return;
+        }
+
+        console.log('Component UI - Contract:', state.writeContract);
+
+        // Fetch eggs
+        const eggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
+        console.log('Component Eggs:', eggs);
+
+        // Fetch referrals
+        const referrals = await state.readOnlyContract.methods.referrals(state.account).call();
+        console.log('Component Referrals:', referrals);
+
+        // Fetch CEO address
+        const ceoAddress = await state.readOnlyContract.methods.ceoAddress().call();
+        console.log('Component CEO Address:', ceoAddress, state.account);
+
+        // Check if the current account is the CEO
+        if (state.account.toLowerCase() === ceoAddress.toLowerCase()) {
+          setStartGame(true);
+        }
+
+        // Set referral address
+        setRefAddress(referrals);
       } catch (error) {
-        // console.error('Error fetching barrel balance:', error);
-        setErr('Error fetching barrel balance')
+        console.error('Error fetching barrel balance:', error);
+        setErr('Error fetching barrel balance: ' + error.message);
+        toast.error('Failed to fetch barrel balance.');
       }
     };
-    if (state.contract) {
-      setErr('')
+
+    if (state.account) {
       fetchBarrelBalance();
     }
-  }, [state.contract, state.account]);
-
-  const buyEggs = async () => {
-    setErr('')
-
-    const parsedEthAmount = parseFloat(ethAmount);
-    if (!parsedEthAmount || isNaN(parsedEthAmount) || parsedEthAmount <= 0) {
-      alert('Please enter a valid amount.');
-      return;
-    }
-    try {
-       const weiValue = Web3.utils.toWei(parsedEthAmount.toString(), 'ether');
-
-      if (!state.contract || !state.contract.methods) {
-        throw new Error('Contract not initialized correctly');
-      }
- const gasEstimate = await state.contract.methods.bakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account, value: weiValue });
-await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000000000000000000').send({ from: state.account, value: weiValue, gas: gasEstimate });
-       const balance = await web3.eth.getBalance(state.account);
-        dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
-
-      const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
-      const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account });
-      setEthAmount(0);
-      setRefAddress(refAddress); // Set the referral address permanently after first use
-      setownerBalace({
-        eggs: myEggs,
-        minners: myMiners,
-      });
-       alert('Eggs purchased successfully!');
-    } catch (error) {
-      // console.error('Error buying eggs:', error);
-      setErr('Error buying eggs');
-      alert('An error occurred: ' + error.message);
-    }
-  };
-
-  const rebake = async () => {
-    setErr('')
-    try {
-       const gasEstimate = await state.contract.methods.rebakePizza(refAddress || '0x0000000000000000000000000000000000000000').estimateGas({ from: state.account });
- await state.contract.methods.rebakePizza(refAddress|| '0x0000000000000000000000000000000000000000').send({ from: state.account, gas: gasEstimate });
-
-       const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
-      const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account });
-      setownerBalace({
-        eggs: myEggs,
-        minners: myMiners,
-      });
-      const balance = await web3.eth.getBalance(state.account);
-      dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
-      alert('Eggs rebaked successfully!');
-    } catch (error) {
-      setErr('Error rebaking eggs');
-      alert('An error occurred: ' + error.message);
-
-      // console.error('Error rebaking eggs:', error);
-    }
-  };
-
-  const withdrawRewards = async () => {
-    try {
-    setErr('')
-
-      const gasEstimate = await state.contract.methods.eatPizza().estimateGas({ from: state.account });
-      await state.contract.methods.eatPizza( ).send({ from: state.account, gas: gasEstimate });
-     
-       const myMiners = await state.contract.methods.getMyMiners().call({ from: state.account });
-      const myEggs = await state.contract.methods.getMyEggs().call({ from: state.account });
-      setownerBalace({
-        eggs: myEggs,
-        minners: myMiners,
-      });
-      const balance = await web3.eth.getBalance(state.account);
-      dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
-      alert('Rewards withdrawn successfully!');
-    } catch (error) {
-    setErr('Error withdrawing rewards')
-    alert('An error occurred: ' + error.message);
-
-      // console.error('Error withdrawing rewards:', error);
-    }
-  };
-
-  const kitchen = async () => {
-    try {
-      await state.contract.methods.openKitchen().send({ from: state.account, value: 0 });
-      alert('Game started successfully!');
-      dispatch({ type: 'START_GAME', gameIsStarted: true });
-    } catch (error) {
-      alert('Error starting game: ' + error.message);
-
-      // console.error('Error starting game:', error);
-    }
-  };
+  }, [state.readOnlyContract, state.writeContract, state.account]);
 
   return (
-    <div className=" flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/path-to-your-background-image.jpg')" }}>
+    <div className="flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/path-to-your-background-image.jpg')" }}>
       <div className="bg-black bg-opacity-70 p-6 rounded-lg shadow-lg max-w-md w-full sm:p-4">
         <h2 className="text-white text-center text-xl font-semibold mb-4">Compound, Pocket, and Hire Daily!</h2>
 
@@ -176,17 +100,20 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
             className="w-full text-white bg-black bg-opacity-80 p-2 rounded-md outline-none"
           />
         </div>
-{err.length>1 && <p className='text-red-600'> {err}</p>}
-         {/* Buttons */}
-        <button className="w-full bg-teal-500 text-white py-2 rounded-md mb-3 uppercase" onClick={buyEggs}>
-          Bake Pizza
-        </button>
-        <button className="w-full bg-teal-500 text-white py-2 rounded-md mb-3 uppercase" onClick={rebake}>
-          Rebake
-        </button>
-        <button className="w-full bg-teal-500 text-white py-2 rounded-md mb-3 uppercase" onClick={withdrawRewards}>
-          Withdraw
-        </button>
+
+        {err.length > 1 && <p className="text-red-600">{err}</p>}
+
+        {/* Buttons */}
+        <Buyeggs
+          setOwnerBalance={setOwnerBalance}
+          ethAmount={ethAmount}
+          refAddress={refAddress}
+        />
+        <Rebake
+          setOwnerBalance={setOwnerBalance}
+          refAddress={refAddress} // Pass refAddress as a prop
+        />
+        <Withdraw setOwnerBalance={setOwnerBalance}/>
 
         {/* Social Media */}
         <div className="flex justify-center items-center gap-4 my-4">
@@ -199,7 +126,8 @@ await state.contract.methods.bakePizza(refAddress|| '0x0000000000000000000000000
         </div>
 
         <p className="text-gray-300 text-center text-sm mb-4">Connect your wallet, Share & Earn!</p>
-         {startGame && <button className="w-full bg-teal-500 text-white py-3 rounded-md text-lg font-bold" onClick={kitchen}>open kitchen!</button>}
+
+        {startGame && !state.gameIsStarted && <OpenKitchen />}
       </div>
     </div>
   );
