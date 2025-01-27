@@ -8,12 +8,12 @@ const Notifications = () => {
   useEffect(() => {
     const checkEggs = async () => {
       const myEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
-      if (myEggs >= 864000) { // EGGS_TO_HATCH_1MINERS = 864000
+      if (myEggs >= 864000) {  
         toast.info('Your eggs are ready to hatch!');
       }
     };
 
-    const interval = setInterval(checkEggs, 60000); // Check every minute
+    const interval = setInterval(checkEggs, 60000);  
     return () => clearInterval(interval);
   }, [state.readOnlyContract, state.account]);
 

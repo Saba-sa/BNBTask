@@ -61,7 +61,7 @@ const Countdown = () => {
   }, [contractDeploymentTimestamp]);
 
   const getBalance = async () => {
-    const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
+    const BSC_RPC_URL = "https://bsc-dataseed.bnbchain.org";
     const web3 = new Web3(BSC_RPC_URL);
 
     if (typeof web3 !== 'undefined') {

@@ -50,7 +50,7 @@ const CompoundUI = ({ setOwnerBalance }) => {
   }, [state.readOnlyContract, state.writeContract, state.account]);
 
   return (
-    <div className="flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/path-to-your-background-image.jpg')" }}>
+    <div className="flex items-center justify-center bg-cover bg-center" >
       <div className="bg-black bg-opacity-70 p-6 rounded-lg shadow-lg max-w-md w-full sm:p-4">
         <h2 className="text-white text-center text-xl font-semibold mb-4">Compound, Pocket, and Hire Daily!</h2>
 
