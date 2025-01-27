@@ -26,8 +26,7 @@ const Withdraw = ({ setOwnerBalance }) => {
       console.log('Is Initialized:', isInitialized);
 
       const myEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
-      console.log('My Eggs:', myEggs);
-
+ 
       if (myEggs <= 0) {
         throw new Error('No eggs to withdraw');
       }
@@ -46,14 +45,13 @@ const Withdraw = ({ setOwnerBalance }) => {
       const balance = await web3.eth.getBalance(state.account);
       dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
 
-      if (receipt) {
-        const myMiners = await state.readOnlyContract.methods.getMyMiners().call({ from: state.account });
-        const myEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
-        setOwnerBalance({
+         const myMiners = await state.readOnlyContract.methods.getMyMiners().call({ from: state.account });
+         
+         setOwnerBalance({
           eggs: myEggs,
           miners: myMiners,
         });
-      }
+      
 
       setButtonText('Success');
       toast.success('Rewards withdrawn successfully!');

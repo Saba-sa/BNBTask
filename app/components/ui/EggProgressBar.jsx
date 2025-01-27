@@ -3,41 +3,62 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/app/context/AppContext";
 import { toast } from "react-toastify";
 
-const EggProgressBar = () => {
+const EggProgressBar = ({ setOwnerBalance }) => {
   const { state } = useAppContext();
-  const [progress, setProgress] = useState(0);
+  const [minersCount, setMinersCount] = useState(0); // Track miners
+  const [eggsCount, setEggsCount] = useState(0); // Track eggs
+
+  // Fetch live data from the contract
+  const fetchData = async () => {
+    try {
+      if (!state.readOnlyContract || !state.account) return;
+
+      // Fetch current eggs and miners
+      const myEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
+      const myMiners = await state.readOnlyContract.methods.getMyMiners().call({ from: state.account });
+
+      // Update state
+      setEggsCount(Number(myEggs));
+      setMinersCount(Number(myMiners));
+    } catch (error) {
+      toast.error("Error fetching data:");
+    }
+  };
 
   useEffect(() => {
-    const fetchProgress = async () => {
-      try {
-        // Fetch eggs as BigInt
-        const myEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
-  
-        // Convert BigInt to Number
-        const eggsNumber = Number(myEggs);
-  
-        // Calculate progress (ensure it doesn't exceed 100%)
-        const progress = Math.min((eggsNumber / 864000) * 100, 100); // EGGS_TO_HATCH_1MINERS = 864000
-        setProgress(progress);
-      } catch (error) {
-        toast.error("Error fetching progress:");
-      }
-    };
-  
-    if (state.readOnlyContract && state.account) {
-      fetchProgress();
+    // Fetch data initially
+    fetchData();
+
+    // Set up an interval to update data every second
+    const interval = setInterval(fetchData, 1000);
+
+    // Clean up the interval on component unmount
+    return () => clearInterval(interval);
+  }, [state.readOnlyContract, state.account]);
+
+  // Update owner balance or other external states if needed
+  useEffect(() => {
+    if (setOwnerBalance) {
+      setOwnerBalance({ eggs: eggsCount, miners: minersCount });
     }
-  }, [state.readOnlyContract, state.account, state.balance]); // Add state.balance as a dependency
+  }, [minersCount, eggsCount, setOwnerBalance]);
+
   return (
     <div className="mt-4">
-      <h2 className="text-lg font-semibold mb-2">Egg Accumulation Progress</h2>
-      <div className="w-full bg-gray-200 rounded-full h-4 border-2 border-orange-500">
-        <div
-          className="bg-orange-500 h-4 rounded-full"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
-      <p className="mt-2 text-sm">{progress.toFixed(2)}% to next miner</p>
+     
+
+      {/* Display a message if the user has no miners */}
+      {minersCount === 0 && (
+        <p className="mt-2 text-sm text-red-500">
+          You have no miners. Buy or hatch eggs to start generating eggs!
+        </p>
+      )}
+
+       {minersCount > 0 && eggsCount === 0 && (
+        <p className="mt-2 text-sm text-yellow-500">
+          Your eggs count is not increasing. Try hatching or selling eggs to update the last hatch time.
+        </p>
+      )}
     </div>
   );
 };

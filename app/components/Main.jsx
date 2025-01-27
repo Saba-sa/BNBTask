@@ -8,8 +8,7 @@ import Socialmedialinks from "./ui/Socialmedialinks";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import EggProgressBar from "./ui/EggProgressBar";
-import Notifications from "./ui/Notifications";
-
+ 
 const Main = () => {
   const { state } = useAppContext();
   const [modalShow, setModalShow] = useState(false);
@@ -98,7 +97,7 @@ const Main = () => {
               </p>
             </>
           )}
-          <EggProgressBar />
+          <EggProgressBar  setOwnerBalance={setOwnerBalance}/>
         </div>
 
         <CompoundUI setOwnerBalance={setOwnerBalance} />
@@ -113,8 +112,7 @@ const Main = () => {
           Get Started
         </button>
         <Socialmedialinks />
-        <Notifications />
-      </div>
+       </div>
     </div>
   );
 };

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import Loader from "./Loader";
 import Web3 from "web3";
 import { toast } from "react-toastify";
+import {contractAddress,transactionHash} from "../../utils/contractConfig"
 
 const Countdown = () => {
   const { state, dispatch } = useAppContext();
   const contractDeploymentTimestamp = state?.deploymentTimestamp || 0;
-  const contractAddress = '0x54594b92dD6497e602e2fd0977F9Af1d78806e7a';
-  const transactionHash = "0x910d21a4427af36b3fc5031228cb21b2e0e174c192d3f3822ec8185d557b8ba2";
+
 
   const [balance, setBalance] = useState('0');
   const [elapsedTime, setElapsedTime] = useState({
@@ -62,6 +62,7 @@ const Countdown = () => {
 
   const getBalance = async () => {
     const BSC_RPC_URL = "https://bsc-dataseed.bnbchain.org";
+ 
     const web3 = new Web3(BSC_RPC_URL);
 
     if (typeof web3 !== 'undefined') {
