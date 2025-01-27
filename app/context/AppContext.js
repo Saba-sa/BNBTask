@@ -18,7 +18,7 @@ const initialState = {
   isInitialized: false,
 };
 
- const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
+  const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
 
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);

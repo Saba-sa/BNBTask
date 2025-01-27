@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { toast } from 'react-toastify';
 
-const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
+const Buyeggs = ({ setOwnerBalance, ethAmount, setEthAmount }) => {
   const { state, dispatch } = useAppContext();
   const [web3, setWeb3] = useState(null);
   const [buttonText, setButtonText] = useState('Bake Pizza');
@@ -23,28 +23,44 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
       toast.error('Please enter a valid amount.');
       return false;
     }
+    // Ensure the amount is at least 0.005 BNB
+    if (parsedEthAmount < 0.005) {
+      toast.error('Minimum amount is 0.005 BNB.');
+      return false;
+    }
     return true;
   };
 
   const checkBalance = async (weiValue) => {
     const userBalance = await web3.eth.getBalance(state.account);
-    if (BigInt(userBalance) < BigInt(weiValue)) {
+    const gasPrice = await web3.eth.getGasPrice();
+
+    const gasEstimate = await state.writeContract.methods
+      .bakePizza(state.account) // Use the user's address as the referral
+      .estimateGas({ from: state.account, value: weiValue });
+
+    // Convert all values to BigInt for arithmetic operations
+    const totalCost = BigInt(weiValue) + BigInt(gasEstimate) * BigInt(gasPrice);
+
+    if (BigInt(userBalance) < totalCost) {
       toast.error('Insufficient balance to complete the transaction.');
       return false;
     }
     return true;
   };
 
-  const sendTransaction = async (weiValue, tempRef) => {
+  const sendTransaction = async (weiValue) => {
     const gasEstimate = await state.writeContract.methods
-      .bakePizza(tempRef)
+      .bakePizza(state.account) // Use the user's address as the referral
       .estimateGas({ from: state.account, value: weiValue });
 
-    const gasWithBuffer = Math.floor(gasEstimate * 1.2); // Add 20% buffer
+    // Convert gasEstimate to BigInt and add a 20% buffer
+    const gasEstimateBigInt = BigInt(gasEstimate);
+    const gasWithBuffer = (gasEstimateBigInt * BigInt(120)) / BigInt(100); // 20% buffer
 
     const receipt = await state.writeContract.methods
-      .bakePizza(tempRef)
-      .send({ from: state.account, value: weiValue, gas: gasWithBuffer });
+      .bakePizza(state.account) // Use the user's address as the referral
+      .send({ from: state.account, value: weiValue, gas: gasWithBuffer.toString() });
 
     return receipt;
   };
@@ -65,16 +81,8 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
       return;
     }
 
-    let tempRef;
-    const referrals = await state.readOnlyContract.methods.referrals(state.account).call();
-    if (referrals === '0x0000000000000000000000000000000000000000') {
-      tempRef = refAddress;
-    } else {
-      tempRef = referrals;
-    }
-
     try {
-      const receipt = await sendTransaction(weiValue, tempRef);
+      const receipt = await sendTransaction(weiValue);
 
       if (receipt.status) {
         const balance = await web3.eth.getBalance(state.account);
@@ -95,6 +103,7 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
         throw new Error('Transaction failed.');
       }
     } catch (error) {
+      console.error('Error:', error);
       toast.error('Error buying eggs');
       setButtonText('Failed');
 
