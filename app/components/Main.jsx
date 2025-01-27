@@ -97,7 +97,7 @@ const Main = () => {
               </p>
             </>
           )}
-          <EggProgressBar  setOwnerBalance={setOwnerBalance}/>
+  {state.account &&<EggProgressBar  setOwnerBalance={setOwnerBalance}/>}
         </div>
 
         <CompoundUI setOwnerBalance={setOwnerBalance} />
