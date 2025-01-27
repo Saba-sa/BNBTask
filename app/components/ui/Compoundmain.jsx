@@ -5,9 +5,7 @@ import { FaTwitter, FaFacebook } from 'react-icons/fa';
 import OpenKitchen from './Openkitchen';
 import Buyeggs from './Buyeggs';
 import Rebake from './Rebake';
-import Withdraw from './Withdraw';
-import Web3 from 'web3';
-import { contractABI, contractAddress } from '@/app/utils/contractConfig';
+import Withdraw from './Withdraw'; 
 import { toast } from 'react-toastify';
 
 const CompoundUI = ({ setOwnerBalance }) => {
@@ -20,28 +18,18 @@ const CompoundUI = ({ setOwnerBalance }) => {
 
   useEffect(() => {
     const fetchBarrelBalance = async () => {
-      console.log('fetching barrel balance');
-      try {
-        // Check if state.contract and state.contract.readOnlyContract are defined
-        if (!state.readOnlyContract || !state.account) {
-          console.warn('Contract or account not initialized');
-          toast.warn('Contract or account not initialized.');
+       try {
+         if (!state.readOnlyContract || !state.account) {
+           toast.warn('Contract or account not initialized.');
           return;
         }
 
-        console.log('Component UI - Contract:', state.writeContract);
-
-        // Fetch eggs
-        const eggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
-        console.log('Component Eggs:', eggs);
-
-        // Fetch referrals
-        const referrals = await state.readOnlyContract.methods.referrals(state.account).call();
-        console.log('Component Referrals:', referrals);
-
-        // Fetch CEO address
-        const ceoAddress = await state.readOnlyContract.methods.ceoAddress().call();
-        console.log('Component CEO Address:', ceoAddress, state.account);
+ 
+  
+         const referrals = await state.readOnlyContract.methods.referrals(state.account).call();
+ 
+         const ceoAddress = await state.readOnlyContract.methods.ceoAddress().call();
+       
 
         // Check if the current account is the CEO
         if (state.account.toLowerCase() === ceoAddress.toLowerCase()) {
@@ -51,8 +39,7 @@ const CompoundUI = ({ setOwnerBalance }) => {
         // Set referral address
         setRefAddress(referrals);
       } catch (error) {
-        console.error('Error fetching barrel balance:', error);
-        setErr('Error fetching barrel balance: ' + error.message);
+         setErr('Error fetching barrel balance: ' + error.message);
         toast.error('Failed to fetch barrel balance.');
       }
     };
@@ -107,7 +94,7 @@ const CompoundUI = ({ setOwnerBalance }) => {
         <Buyeggs
           setOwnerBalance={setOwnerBalance}
           ethAmount={ethAmount}
-          refAddress={refAddress}
+          refAddress={refAddress} setEthAmount={setEthAmount}
         />
         <Rebake
           setOwnerBalance={setOwnerBalance}

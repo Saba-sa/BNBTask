@@ -13,7 +13,7 @@ const UserAcknowlegent = ({ isOpen, closeModal }) => {
       id: 1,
       title: "Information's Purpose",
       description: [
-        "We've put together details about \"BNB Miner X\" and our platform, to guide you. While we aim to inform, remember that decisions related to DeFi should come from a mix of personal research and professional advice. Litepaper..."
+        "We've put together details about \"Tokenoven\" and our platform, to guide you. While we aim to inform, remember that decisions related to DeFi should come from a mix of personal research and professional advice. Litepaper..."
       ]
     },
     {
@@ -55,7 +55,7 @@ const UserAcknowlegent = ({ isOpen, closeModal }) => {
       id: 7,
       title: "Guard Your Assets",
       description: [
-        "Keeping your assets safe is essential. As you use \"BNB Miner X\", remember to double-check details and be cybersecurity-conscious."
+        "Keeping your assets safe is essential. As you use \"Tokenoven\", remember to double-check details and be cybersecurity-conscious."
       ]
     },
      
@@ -84,7 +84,7 @@ const UserAcknowlegent = ({ isOpen, closeModal }) => {
                 <p className="text-xl   mx-auto font-bold text-white my-2 uppercase ">BNB Miner User Acknowledgement:
 
                   </p>
-                <p className="text-md text-left my-2 text-white">Welcome to BNB Miner X! Before diving in, here are some things we'd like you to be aware of:
+                <p className="text-md text-left my-2 text-white">Welcome to Tokenoven! Before diving in, here are some things we'd like you to be aware of:
                 </p>
               </div>
               <ol className="list-decimal pl-6">
@@ -103,9 +103,9 @@ const UserAcknowlegent = ({ isOpen, closeModal }) => {
                   </li>
                 ))}
               </ol>
-              <p className="px-4">By using the BNB Miner X platform, you acknowledge that DeFi is a new technology still in its experimental stage. You agree that the BNB Miner X developers, admins, community, and/or associates make absolutely no guarantees, promises, or warranties, whether express or implied. You recognize the unique nature of DeFi and the importance of personal due diligence. 
+              <p className="px-4">By using the Tokenoven platform, you acknowledge that DeFi is a new technology still in its experimental stage. You agree that the Tokenoven developers, admins, community, and/or associates make absolutely no guarantees, promises, or warranties, whether express or implied. You recognize the unique nature of DeFi and the importance of personal due diligence. 
                 We're thrilled to have you on board and wish you a positive 
-                experience with BNB Miner X.
+                experience with Tokenoven.
               </p>
                <p className="font-bold pl-4 pt-2">Happy mining!
               </p>

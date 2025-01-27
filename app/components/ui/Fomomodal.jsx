@@ -10,7 +10,7 @@ const ModelTemplate = ({ isOpen, closeModal }) => {
       id: 1,
       title: "Setting Up",
       description: [
-        "Before you start, ensure you have a Binance Smart Chain (BSC) compatible wallet with some BNB (Bep20) in it (e.g., MetaMask). BNB Miner X operates on the BSC, so you'll need BNB to interact with the contract."
+        "Before you start, ensure you have a Binance Smart Chain (BSC) compatible wallet with some BNB (Bep20) in it (e.g., MetaMask). Tokenoven operates on the BSC, so you'll need BNB to interact with the contract."
       ]
     },
     {
@@ -51,7 +51,7 @@ const ModelTemplate = ({ isOpen, closeModal }) => {
       id: 6,
       title: "Understanding the Game Dynamics",
       description: [
-        "BNB Miner X has a dynamic pricing system for Hiring and Pocketing Rewards.",
+        "Tokenoven has a dynamic pricing system for Hiring and Pocketing Rewards.",
         "Rewards are determined by the ratio of BNB in the contract to Miners in the market.",
         "With this dynamic in mind, it's in the best interest of all community members to grow and maintain a high contract balance to ensure generous long-term rewards.",
         "Learn More..."
@@ -78,9 +78,9 @@ const ModelTemplate = ({ isOpen, closeModal }) => {
           <div className="modal-container h-[400px] bg-gray-800 text-white w-11/12 md:max-w-5xl mx-auto rounded-lg shadow-lg overflow-x-hidden overflow-y-scroll">
             <div className="modal-content py-4 text-left px-2">
               <div className="flex justify-between items-center flex-col pb-3 p-4">
-                <p className="text-2xl font-bold text-teal-600 my-2 uppercase">STEP-BY-STEP GUIDE for BNB Miner X</p>
+                <p className="text-2xl font-bold text-teal-600 my-2 uppercase">STEP-BY-STEP GUIDE for Tokenoven</p>
                 <p>★ THE LONGEST RUNNING MINER! Over 3 Years Strong!</p>
-                <p className="text-xl text-center my-2">Welcome to BNB Miner X! A grassroots community that Hires Miners, Compounds Rewards, and Responsibly Pockets BNB.</p>
+                <p className="text-xl text-center my-2">Welcome to Tokenoven! A grassroots community that Hires Miners, Compounds Rewards, and Responsibly Pockets BNB.</p>
               </div>
               <ol className="list-decimal pl-6">
                 {details.map((detail) => (

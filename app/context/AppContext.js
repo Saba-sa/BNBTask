@@ -18,25 +18,25 @@ const initialState = {
   isInitialized: false,
 };
 
-const MOONBEAM_RPC_URL = "https://rpc.api.moonbase.moonbeam.network";
+ const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
 
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   // Initialize Web3 instances
-  const initializeWeb3 = async () => {
+  const initializeWeb3 = async (provider) => {
     let publicWeb3, walletWeb3;
 
     try {
       // Public RPC Web3 instance (for read-only operations)
-      publicWeb3 = new Web3(new Web3.providers.HttpProvider(MOONBEAM_RPC_URL));
+      publicWeb3 = new Web3(new Web3.providers.HttpProvider(BSC_RPC_URL));
 
       // Wallet Provider Web3 instance (for write operations)
-      if (window.ethereum) {
-        walletWeb3 = new Web3(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" }); // Request account access
+      if (provider) {
+        walletWeb3 = new Web3(provider);
+        await provider.request({ method: "eth_requestAccounts" }); // Request account access
       } else {
-        toast.warn("MetaMask is not installed. Write operations will not work.");
+        toast.warn("No wallet provider detected. Write operations will not work.");
       }
     } catch (error) {
       console.error("Error initializing Web3:", error);
@@ -82,7 +82,7 @@ export const AppProvider = ({ children }) => {
     if (account) {
       try {
         const web3 = new Web3(
-          new Web3.providers.HttpProvider(MOONBEAM_RPC_URL)
+          new Web3.providers.HttpProvider(BSC_RPC_URL)
         );
         const balance = await web3.eth.getBalance(account);
         const balanceInEther = web3.utils.fromWei(balance, "ether");
@@ -114,41 +114,29 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const initializeBlockchain = async () => {
-      try {
-        // Initialize Web3 instances
-        const { publicWeb3, walletWeb3 } = await initializeWeb3();
+  // Connect to a wallet provider
+  const connectWallet = async (provider) => {
+    try {
+      const { publicWeb3, walletWeb3 } = await initializeWeb3(provider);
+      await initializeContracts(publicWeb3, walletWeb3);
 
-        // Initialize contracts
-        await initializeContracts(publicWeb3, walletWeb3);
-
-        // Attempt to fetch accounts using MetaMask
-        if (window.ethereum) {
-          try {
-            const accounts = await window.ethereum.request({
-              method: "eth_requestAccounts",
-            });
-            if (accounts.length > 0) {
-              dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
-              await fetchBalance(accounts[0]);
-            }
-          } catch (accountError) {
-            console.warn("Unable to fetch accounts:", accountError);
-            toast.warn("User rejected account access.");
-          }
+      if (provider) {
+        const accounts = await provider.request({ method: "eth_requestAccounts" });
+        if (accounts.length > 0) {
+          dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
+          await fetchBalance(accounts[0]);
         }
-
-        dispatch({ type: "SET_INITIALIZED", payload: true });
-        console.log("Blockchain initialized.");
-      } catch (error) {
-        console.error("Error initializing blockchain:", error);
-        toast.error("Failed to initialize blockchain.");
       }
-    };
 
-    initializeBlockchain();
+      dispatch({ type: "SET_INITIALIZED", payload: true });
+      console.log("Blockchain initialized.");
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      toast.error("Failed to connect wallet.");
+    }
+  };
 
+  useEffect(() => {
     // Listen for account changes if MetaMask is available
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", handleAccountsChanged);
@@ -166,7 +154,7 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
+    <AppContext.Provider value={{ state, dispatch, connectWallet }}>
       {children}
     </AppContext.Provider>
   );

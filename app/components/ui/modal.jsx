@@ -1,32 +1,27 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../context/AppContext";
-import Web3 from "web3";
 import Loader from "./Loader";
 
 const ModalComponent = ({ isOpen, closeModal }) => {
-  const { dispatch } = useAppContext();
+  const { dispatch, connectWallet } = useAppContext();
   const [errMsg, setErrMsg] = useState("");
   const [loader, setLoader] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
+      setLoader(false);
+
       setErrMsg("");
     }
   }, [isOpen]);
 
   const connectMetaMask = async () => {
-    console.log("metamask");
-    setLoader(true);
+     setLoader(true);
     setErrMsg("");
     try {
       if (!window.ethereum) throw new Error("MetaMask is not installed");
-
-      const web3 = new Web3(window.ethereum);
-      const accounts = await web3.eth.requestAccounts();
-      dispatch({ type: "SET_PROVIDER", payload: window.ethereum });
-      dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
-
+      await connectWallet(window.ethereum);
       setLoader(false);
       closeModal();
     } catch (error) {
@@ -36,18 +31,12 @@ const ModalComponent = ({ isOpen, closeModal }) => {
   };
 
   const connectBinanceWallet = async () => {
-    console.log("binance");
-    setLoader(true);
+     setLoader(true);
     setErrMsg("");
     try {
       if (!window.BinanceChain)
         throw new Error("Binance Wallet is not installed");
-      const accounts = await window.BinanceChain.request({
-        method: "eth_requestAccounts",
-      });
-      dispatch({ type: "SET_PROVIDER", payload: window.BinanceChain });
-      dispatch({ type: "SET_ACCOUNT", payload: accounts[0] });
-
+      await connectWallet(window.BinanceChain);
       setLoader(false);
       closeModal();
     } catch (error) {

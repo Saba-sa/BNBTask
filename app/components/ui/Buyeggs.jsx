@@ -4,65 +4,86 @@ import React, { useEffect, useState } from 'react';
 import Web3 from 'web3';
 import { toast } from 'react-toastify';
 
-const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress }) => {
+const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
   const { state, dispatch } = useAppContext();
-  const [err, setErr] = useState('');
   const [web3, setWeb3] = useState(null);
   const [buttonText, setButtonText] = useState('Bake Pizza');
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.ethereum) {
       setWeb3(new Web3(window.ethereum));
+    } else {
+      toast.error('Please install MetaMask or another Ethereum wallet.');
     }
   }, []);
 
-  const buyEggs = async () => {
-    setErr('');
-    setButtonText('Loading...');
-
-    // Validate input amount
+  const validateInput = () => {
     const parsedEthAmount = parseFloat(ethAmount);
     if (!parsedEthAmount || isNaN(parsedEthAmount) || parsedEthAmount <= 0) {
       toast.error('Please enter a valid amount.');
+      return false;
+    }
+    return true;
+  };
+
+  const checkBalance = async (weiValue) => {
+    const userBalance = await web3.eth.getBalance(state.account);
+    if (BigInt(userBalance) < BigInt(weiValue)) {
+      toast.error('Insufficient balance to complete the transaction.');
+      return false;
+    }
+    return true;
+  };
+
+  const sendTransaction = async (weiValue, tempRef) => {
+    const gasEstimate = await state.writeContract.methods
+      .bakePizza(tempRef)
+      .estimateGas({ from: state.account, value: weiValue });
+
+    const gasWithBuffer = Math.floor(gasEstimate * 1.2); // Add 20% buffer
+
+    const receipt = await state.writeContract.methods
+      .bakePizza(tempRef)
+      .send({ from: state.account, value: weiValue, gas: gasWithBuffer });
+
+    return receipt;
+  };
+
+  const buyEggs = async () => {
+    setButtonText('Loading...');
+
+    if (!validateInput()) {
       setButtonText('Bake Pizza');
       return;
     }
 
+    const parsedEthAmount = parseFloat(ethAmount);
+    const weiValue = Web3.utils.toWei(parsedEthAmount.toString(), 'ether');
+
+    if (!(await checkBalance(weiValue))) {
+      setButtonText('Bake Pizza');
+      return;
+    }
+
+    let tempRef;
+    const referrals = await state.readOnlyContract.methods.referrals(state.account).call();
+    if (referrals === '0x0000000000000000000000000000000000000000') {
+      tempRef = refAddress;
+    } else {
+      tempRef = referrals;
+    }
+
     try {
-      const weiValue = Web3.utils.toWei(parsedEthAmount.toString(), 'ether');
+      const receipt = await sendTransaction(weiValue, tempRef);
 
-      // Check user balance
-      const userBalance = await web3.eth.getBalance(state.account);
-      if (BigInt(userBalance) < BigInt(weiValue)) {
-        toast.error('Insufficient balance to complete the transaction.');
-        setButtonText('Bake Pizza');
-        return;
-      }
-
-      // Estimate gas
-      const gasEstimate = await state.writeContract.methods
-        .bakePizza(refAddress || '0x0000000000000000000000000000000000000000')
-        .estimateGas({ from: state.account, value: weiValue });
-
-      // Increase gas limit by 20% to avoid out-of-gas errors
-      const increasedGasEstimate = Math.floor(gasEstimate * 1.2);
-
-      // Send transaction with increased gas limit
-      const receipt = await state.writeContract.methods
-        .bakePizza(refAddress || '0x0000000000000000000000000000000000000000')
-        .send({ from: state.account, value: weiValue, gas: increasedGasEstimate });
-
-      // Check if the transaction was successful
       if (receipt.status) {
-        // Fetch updated balance
         const balance = await web3.eth.getBalance(state.account);
         dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
+        setEthAmount(0);
 
-        // Fetch updated miners and eggs
         const myMiners = await state.writeContract.methods.getMyMiners().call({ from: state.account });
         const myEggs = await state.writeContract.methods.getMyEggs().call({ from: state.account });
 
-        // Update owner balance
         setOwnerBalance({
           eggs: myEggs,
           miners: myMiners,
@@ -74,10 +95,9 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress }) => {
         throw new Error('Transaction failed.');
       }
     } catch (error) {
-      console.error('Error buying eggs:', error);
+      toast.error('Error buying eggs');
       setButtonText('Failed');
 
-      // Handle specific error cases
       if (error.code === 4001) {
         toast.error('Transaction rejected by user.');
       } else if (error.message.includes('revert')) {
@@ -99,7 +119,7 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress }) => {
     <button
       className="w-full bg-teal-500 text-white py-2 rounded-md mb-3 uppercase"
       onClick={buyEggs}
-      disabled={buttonText === 'Loading...'}
+      disabled={buttonText === 'Loading...' || buttonText === 'Success'}
     >
       {buttonText}
     </button>

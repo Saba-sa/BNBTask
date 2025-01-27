@@ -47,7 +47,7 @@ const Main = () => {
 
       toast.success("Miners and eggs values fetched successfully");
     } catch (error) {
-      console.error("Error fetching balance:", error);
+      toast.error("Error fetching balance:", error);
 
       // Handle specific error cases
       if (error.message.includes("revert")) {

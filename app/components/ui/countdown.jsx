@@ -8,8 +8,8 @@ import { toast } from "react-toastify";
 const Countdown = () => {
   const { state, dispatch } = useAppContext();
   const contractDeploymentTimestamp = state?.deploymentTimestamp || 0;
-  const contractAddress = '0x96845f4A562F24D9e4D16A6dB68F12B7e7E27B32';
-  const transactionHash = "0x320c48e5ffbb99edc2e47674e5125259878a4e15eddb946966eeb83f930abce5";
+  const contractAddress = '0x54594b92dD6497e602e2fd0977F9Af1d78806e7a';
+  const transactionHash = "0x910d21a4427af36b3fc5031228cb21b2e0e174c192d3f3822ec8185d557b8ba2";
 
   const [balance, setBalance] = useState('0');
   const [elapsedTime, setElapsedTime] = useState({
@@ -61,7 +61,7 @@ const Countdown = () => {
   }, [contractDeploymentTimestamp]);
 
   const getBalance = async () => {
-    const BSC_RPC_URL = "https://rpc.api.moonbase.moonbeam.network";
+    const BSC_RPC_URL = "https://bsc-dataseed.binance.org/";
     const web3 = new Web3(BSC_RPC_URL);
 
     if (typeof web3 !== 'undefined') {

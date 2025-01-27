@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 
 const Rebake = ({ setOwnerBalance, refAddress }) => {
   const { state, dispatch } = useAppContext();
-  const [err, setErr] = useState('');
   const [web3, setWeb3] = useState(null);
   const [buttonText, setButtonText] = useState('Rebake');
 
@@ -17,41 +16,34 @@ const Rebake = ({ setOwnerBalance, refAddress }) => {
   }, []);
 
   const rebake = async () => {
-    setErr('');
     setButtonText('Loading...');
 
     try {
-      // Estimate gas
       const gasEstimate = await state.writeContract.methods
         .rebakePizza(refAddress || '0x0000000000000000000000000000000000000000')
         .estimateGas({ from: state.account });
 
-      // Send transaction
       await state.writeContract.methods
         .rebakePizza(refAddress || '0x0000000000000000000000000000000000000000')
         .send({ from: state.account, gas: gasEstimate });
 
-      // Fetch updated miners and eggs
       const myMiners = await state.writeContract.methods.getMyMiners().call({ from: state.account });
       const myEggs = await state.writeContract.methods.getMyEggs().call({ from: state.account });
 
-      // Update owner balance
       setOwnerBalance({
         eggs: myEggs,
         miners: myMiners,
       });
 
-      // Fetch updated balance
       const balance = await web3.eth.getBalance(state.account);
       dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
 
       setButtonText('Success');
       toast.success('Eggs rebaked successfully!');
     } catch (error) {
-      console.error('Error rebaking eggs:', error);
+      toast.error('Error rebaking eggs:');
       setButtonText('Failed');
 
-      // Handle specific error cases
       if (error.code === 4001) {
         toast.error('Transaction rejected by user.');
       } else if (error.message.includes('revert')) {
