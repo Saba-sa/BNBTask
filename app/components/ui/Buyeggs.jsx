@@ -103,8 +103,7 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, setEthAmount }) => {
         throw new Error('Transaction failed.');
       }
     } catch (error) {
-      console.error('Error:', error);
-      toast.error('Error buying eggs');
+       toast.error('Error buying eggs');
       setButtonText('Failed');
 
       if (error.code === 4001) {
