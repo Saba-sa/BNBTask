@@ -39,8 +39,7 @@ export const AppProvider = ({ children }) => {
         toast.warn("No wallet provider detected. Write operations will not work.");
       }
     } catch (error) {
-      console.error("Error initializing Web3:", error);
-      toast.error("Failed to initialize Web3.");
+       toast.error("Failed to initialize Web3.");
     }
 
     return { publicWeb3, walletWeb3 };
@@ -72,8 +71,7 @@ export const AppProvider = ({ children }) => {
         writeContract,
       });
     } catch (error) {
-      console.error("Error initializing contracts:", error);
-      toast.error("Failed to initialize contracts.");
+       toast.error("Failed to initialize contracts.");
     }
   };
 
@@ -89,8 +87,7 @@ export const AppProvider = ({ children }) => {
         dispatch({ type: "SET_BALANCE", payload: balanceInEther });
         console.log("Fetched balance:", balanceInEther);
       } catch (error) {
-        console.error("Error fetching balance:", error);
-        toast.error("Failed to fetch balance.");
+         toast.error("Failed to fetch balance.");
       }
     } else {
       toast.error("No account connected. Cannot fetch balance.");
@@ -109,8 +106,7 @@ export const AppProvider = ({ children }) => {
         toast.warn("No accounts connected.");
       }
     } catch (error) {
-      console.error("Error handling account change:", error);
-      toast.error("Failed to handle account change.");
+       toast.error("Failed to handle account change.");
     }
   };
 
@@ -131,8 +127,7 @@ export const AppProvider = ({ children }) => {
       dispatch({ type: "SET_INITIALIZED", payload: true });
       console.log("Blockchain initialized.");
     } catch (error) {
-      console.error("Error connecting wallet:", error);
-      toast.error("Failed to connect wallet.");
+       toast.error("Failed to connect wallet.");
     }
   };
 

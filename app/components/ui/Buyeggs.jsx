@@ -10,35 +10,29 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
   const [buttonText, setButtonText] = useState('Bake Pizza');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // BSC Network Configuration
+  // BSC Mainnet Configuration
   const BSC_MAINNET = {
     chainId: '0x38', // 56 in decimal
-    chainName: 'BNB Smart Chain',
+    chainName: 'Binance Smart Chain Mainnet',
     nativeCurrency: {
       name: 'BNB',
       symbol: 'BNB',
       decimals: 18,
     },
-    rpcUrls: ['https://bsc-dataseed.binance.org/'],
-    blockExplorerUrls: ['https://bscscan.com/'],
+    rpcUrls: ['https://bsc.nodereal.io'], // BSC Mainnet RPC
+    blockExplorerUrls: ['https://bscscan.com/'], // BSC Mainnet Explorer
   };
 
   const initializeWeb3 = async () => {
     try {
-      // Check for BNB Chain Wallet
-      if (window.BinanceChain) {
-        setWeb3(new Web3(window.BinanceChain));
-        return;
-      }
       // Check for MetaMask
       if (window.ethereum) {
         setWeb3(new Web3(window.ethereum));
         return;
       }
-      toast.error('Please install MetaMask or Binance Wallet');
+      toast.error('Please install MetaMask');
     } catch (error) {
-      console.error('Wallet initialization error:', error);
-      toast.error('Failed to connect to wallet');
+       toast.error('Failed to connect to wallet');
     }
   };
 
@@ -48,7 +42,7 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
 
   const checkNetwork = async () => {
     try {
-      const provider = window.BinanceChain || window.ethereum;
+      const provider = window.ethereum;
       if (!provider) {
         toast.error('No wallet detected');
         return false;
@@ -73,22 +67,16 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
                 });
                 return true;
               } catch (addError) {
-                toast.error('Please switch to BNB Smart Chain network');
+                toast.error('Please switch to Binance Smart Chain Mainnet');
                 return false;
               }
             }
           }
         }
-        // For Binance Wallet
-        else if (window.BinanceChain) {
-          toast.error('Please switch to BNB Smart Chain in Binance Wallet');
-          return false;
-        }
       }
       return true;
     } catch (error) {
-      console.error('Network check error:', error);
-      toast.error('Network check failed');
+       toast.error('Network check failed');
       return false;
     }
   };
@@ -111,8 +99,7 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
 
       return true;
     } catch (error) {
-      console.error('Validation error:', error);
-      toast.error('Invalid input amount');
+       toast.error('Invalid input amount');
       return false;
     }
   };
@@ -147,13 +134,11 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
         }
         return true;
       } catch (error) {
-        console.error('Gas estimation error:', error);
-        toast.error('Failed to estimate transaction cost. Please try again.');
+         toast.error('Failed to estimate transaction cost. Please try again.');
         return false;
       }
     } catch (error) {
-      console.error('Balance check error:', error);
-      toast.error('Failed to check balance');
+       toast.error('Failed to check balance');
       return false;
     }
   };
@@ -162,12 +147,12 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
     try {
       const referrals = await state.readOnlyContract.methods.referrals(state.account).call();
       const tempRef = referrals === '0x0000000000000000000000000000000000000000' ? refAddress : referrals;
-
+  
       // Adjust gas limit based on the value being sent
       const parsedEthAmount = parseFloat(ethAmount);
       const isLargeValue = parsedEthAmount >= 1; // Check if value is 1 BNB or more
-      const gasLimit = isLargeValue ? '1000000' : '500000'; // Increase gas limit for large values
-
+      const gasLimit = isLargeValue ? '500000' : '300000'; // Reduced gas limit
+  console.log('gasLimit', gasLimit)
       const receipt = await state.writeContract.methods
         .bakePizza(tempRef)
         .send({ 
@@ -175,11 +160,10 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
           value: weiValue,
           gas: gasLimit // Use adjusted gas limit
         });
-
+  
       return receipt;
     } catch (error) {
-      console.error('Transaction error:', error);
-      throw error;
+       throw error;
     }
   };
 
@@ -212,7 +196,7 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
       const receipt = await sendTransaction(weiValue);
       
       if (receipt.status) {
-         const [balance, myMiners, myEggs] = await Promise.all([
+        const [balance, myMiners, myEggs] = await Promise.all([
           web3.eth.getBalance(state.account),
           state.writeContract.methods.getMyMiners().call({ from: state.account }),
           state.writeContract.methods.getMyEggs().call({ from: state.account })
@@ -230,10 +214,10 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
         toast.success('Transaction successful!');
       }
     } catch (error) {
-       setButtonText('Failed');
+      setButtonText('Failed');
       
       if (error.message === 'Wrong network') {
-          return;
+        return;
       }
       
       if (error.code === 4001) {

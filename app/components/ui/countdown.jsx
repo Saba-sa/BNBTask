@@ -72,7 +72,7 @@ const Countdown = () => {
 
         const transactionReceipt = await web3.eth.getTransactionReceipt(transactionHash);
         if (!transactionReceipt) {
-          console.error('Transaction receipt not found for the hash:', transactionHash);
+          toast.error('Transaction receipt not found for the hash:');
           setShowLoader(false);
           toast.error("Transaction receipt not found.");
           return;
@@ -83,13 +83,11 @@ const Countdown = () => {
         dispatch({ type: 'SET_DEPLOYMENTTIMESTAMP', payload: Number(deploymentTimestamp) });
         setShowLoader(false);
       } catch (error) {
-        console.error('Error fetching contract balance:', error);
-        setShowLoader(false);
+         setShowLoader(false);
         toast.error("Failed to fetch contract balance.");
       }
     } else {
-      console.error('Web3 is not initialized correctly');
-      setShowLoader(false);
+       setShowLoader(false);
       toast.error("Web3 is not initialized correctly.");
     }
   };

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/app/context/AppContext";
+import { toast } from "react-toastify";
 
 const EggProgressBar = () => {
   const { state } = useAppContext();
@@ -19,7 +20,7 @@ const EggProgressBar = () => {
         const progress = Math.min((eggsNumber / 864000) * 100, 100); // EGGS_TO_HATCH_1MINERS = 864000
         setProgress(progress);
       } catch (error) {
-        console.error("Error fetching progress:", error);
+        toast.error("Error fetching progress:");
       }
     };
   

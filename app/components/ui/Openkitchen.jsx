@@ -58,8 +58,7 @@ const OpenKitchen = () => {
         setIsInitialized(true); // Update the initialized state
       }
     } catch (error) {
-      console.error('Error starting game:', error);
-      if (error.code === 4001) {
+       if (error.code === 4001) {
         toast.error('Transaction rejected by user.');
       } else if (error.message.includes('revert')) {
         const revertReason = error.message.split('revert ')[1] || 'Unknown reason';
