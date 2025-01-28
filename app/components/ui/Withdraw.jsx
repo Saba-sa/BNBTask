@@ -46,7 +46,9 @@ const Withdraw = ({ setOwnerBalance }) => {
       dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
 
          const myMiners = await state.readOnlyContract.methods.getMyMiners().call({ from: state.account });
-         
+         const userEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
+      const bnbValue = await state.readOnlyContract.methods.calculateEggSell(userEggs).call();
+      setBnbInBarrel(parseFloat(web3.utils.fromWei(bnbValue, 'ether')));
          setOwnerBalance({
           eggs: myEggs,
           miners: myMiners,

@@ -37,7 +37,9 @@ const Rebake = ({ setOwnerBalance, refAddress }) => {
 
       const balance = await web3.eth.getBalance(state.account);
       dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
-
+      const userEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
+      const bnbValue = await state.readOnlyContract.methods.calculateEggSell(userEggs).call();
+      setBnbInBarrel(parseFloat(web3.utils.fromWei(bnbValue, 'ether')));
       setButtonText('Success');
       toast.success('Eggs rebaked successfully!');
     } catch (error) {

@@ -201,7 +201,9 @@ const Buyeggs = ({ setOwnerBalance, ethAmount, refAddress, setEthAmount }) => {
           state.writeContract.methods.getMyMiners().call({ from: state.account }),
           state.writeContract.methods.getMyEggs().call({ from: state.account })
         ]);
-
+        const userEggs = await state.readOnlyContract.methods.getMyEggs().call({ from: state.account });
+        const bnbValue = await state.readOnlyContract.methods.calculateEggSell(userEggs).call();
+        setBnbInBarrel(parseFloat(web3.utils.fromWei(bnbValue, 'ether')));
         dispatch({ type: 'SET_BALANCE', payload: web3.utils.fromWei(balance, 'ether') });
         setEthAmount(0);
         
